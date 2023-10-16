@@ -1,0 +1,154 @@
+{
+  "name": "elasticsearch_cluster_health_showing_red",
+  "description": "This incident type occurs when the health status of an Elasticsearch cluster changes to red, indicating that there are critical issues impacting the cluster's ability to function properly. This can be caused by various factors such as hardware failures, network issues, or software bugs, and requires immediate attention to prevent data loss or service disruption. Resolving this incident type requires a thorough investigation of the underlying issue and applying appropriate fixes to restore the cluster's health to normal.",
+  "params": [
+    {
+      "name": "LOCALHOST_9200",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_ELASTICSEARCH_LOGS",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Elasticsearch Cluster Health Showing Red\nThis incident type occurs when the health status of an Elasticsearch cluster changes to red, indicating that there are critical issues impacting the cluster's ability to function properly. This can be caused by various factors such as hardware failures, network issues, or software bugs, and requires immediate attention to prevent data loss or service disruption. Resolving this incident type requires a thorough investigation of the underlying issue and applying appropriate fixes to restore the cluster's health to normal."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if Elasticsearch service is running"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `systemctl status elasticsearch.service`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch logs for any errors"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `journalctl -u elasticsearch.service --no-pager | tail -n 50`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch cluster health status"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s -XGET '${LOCALHOST_9200}/_cat/health?v'`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch cluster nodes"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s -XGET '${LOCALHOST_9200}/_cat/nodes?v'`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch cluster indices"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s -XGET '${LOCALHOST_9200}/_cat/indices?v'`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch cluster shard allocation"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s -XGET '${LOCALHOST_9200}/_cat/shards?v'`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch cluster disk usage"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s -XGET '${LOCALHOST_9200}/_cat/allocation?v'`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch cluster stats"
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s -XGET '${LOCALHOST_9200}/_cluster/stats?human&pretty'`"
+    },
+    {
+      "name": "cell_18",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Elasticsearch cluster settings"
+    },
+    {
+      "name": "cell_19",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s -XGET '${LOCALHOST_9200}/_cluster/settings?pretty'`"
+    },
+    {
+      "name": "cell_20",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the Elasticsearch cluster logs for any errors that could be causing the red health status. Once identified, fix the issue or escalate it to the appropriate team member."
+    },
+    {
+      "name": "cell_21",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_elasticsearch_error_checker($PATH_TO_ELASTICSEARCH_LOGS)"
+    }
+  ]
+}
